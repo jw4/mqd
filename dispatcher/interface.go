@@ -1,3 +1,7 @@
 package dispatcher
 
-type MailQueueDispatcher interface{}
+type MailQueueCallbackFn func([]byte) bool
+
+type MailQueueDispatcher interface {
+	Process(MailQueueCallbackFn) error
+}

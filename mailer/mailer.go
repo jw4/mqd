@@ -12,7 +12,7 @@ import (
 	js "github.com/johnweldon/mqd/smtp"
 )
 
-var logger = log.New(os.Stderr, "dispatcher.mailer: ", log.Lshortfile)
+var logger = log.New(os.Stderr, "mqd.mailer: ", log.Lshortfile)
 
 type SmtpAuthType string
 

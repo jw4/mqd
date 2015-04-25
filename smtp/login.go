@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var logger = log.New(os.Stderr, "dispatcher.smtp: ", log.Lshortfile)
+var logger = log.New(os.Stderr, "mqd.smtp: ", log.Lshortfile)
 
 type loginAuth struct {
 	username []byte
