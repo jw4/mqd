@@ -2,13 +2,11 @@ package smtp
 
 import (
 	"fmt"
-	"log"
 	"net/smtp"
-	"os"
 	"strings"
-)
 
-var logger = log.New(os.Stderr, "mqd.smtp: ", log.Lshortfile)
+	"github.com/golang/glog"
+)
 
 type loginAuth struct {
 	username []byte
@@ -20,12 +18,12 @@ func LoginAuth(username, password string) smtp.Auth {
 }
 
 func (l *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
-	//logger.Printf("Start(server: %+v)", *server)
+	glog.Infof("Start(server: %+v)", *server)
 	return "LOGIN", []byte{}, nil
 }
 
 func (l *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
-	//logger.Printf("Next(fromServer: %q, more: %t)", string(fromServer), more)
+	glog.Infof("Next(fromServer: %q, more: %t)", string(fromServer), more)
 	response := strings.ToLower(string(fromServer[:9]))
 	switch response {
 	case "username:":

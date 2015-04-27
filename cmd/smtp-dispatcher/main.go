@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"os"
 	"time"
+
+	"github.com/golang/glog"
 
 	config "github.com/johnweldon/mqd/config"
 	"github.com/johnweldon/mqd/dispatcher"
@@ -14,10 +16,13 @@ const (
 	settingsfile = ".smtp-dispatcher.settings"
 )
 
+func init() {}
+
 func main() {
+	flag.Parse()
 	settings, err := config.ReadSettings(settingsfile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "FATAL: couldn't read settings %q\n", err)
+		glog.Fatalf("couldn't read settings %q\n", err)
 		os.Exit(-1)
 	}
 	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail)

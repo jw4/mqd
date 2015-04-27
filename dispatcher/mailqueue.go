@@ -2,12 +2,11 @@ package dispatcher
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
-)
 
-var logger = log.New(os.Stderr, "mqd.dispatcher: ", log.Lshortfile)
+	"github.com/golang/glog"
+)
 
 type folderQueue struct {
 	mailqueue string
@@ -24,7 +23,7 @@ func (q *folderQueue) Process(callbackFn MailQueueCallbackFn) error {
 
 func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err2 error) error {
-		logger.Printf("INFO: processing %q", path)
+		glog.Infof("processing %q", path)
 		if info.IsDir() {
 			if path == q.mailqueue {
 				return nil
@@ -48,16 +47,16 @@ func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 }
 
 func (q *folderQueue) markBad(path string, info os.FileInfo) {
-	logger.Printf("ERROR: processing %q was unsuccessful", path)
+	glog.Errorf("processing %q was unsuccessful", path)
 	target := filepath.Join(q.badmail, info.Name())
 	err := os.Rename(path, target)
 	if err != nil {
-		logger.Printf("ERROR: moving %q to %q: %q", path, target, err)
+		glog.Errorf("moving %q to %q: %q", path, target, err)
 	}
 }
 
 func (q *folderQueue) markComplete(path string) {
 	if err := os.Remove(path); err != nil {
-		logger.Printf("ERROR: removing file %q: %q", path, err)
+		glog.Errorf("removing file %q: %q", path, err)
 	}
 }

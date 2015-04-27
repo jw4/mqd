@@ -3,15 +3,13 @@ package mailer
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net/mail"
 	"net/smtp"
-	"os"
+
+	"github.com/golang/glog"
 
 	config "github.com/johnweldon/mqd/config"
 )
-
-var logger = log.New(os.Stderr, "mqd.mailer: ", log.Lshortfile)
 
 type smtpMailer struct {
 	settings config.Settings
@@ -42,13 +40,13 @@ func (m *smtpMailer) Send(sender string, recipients []string, message []byte) er
 func (m *smtpMailer) ConvertAndSend(message []byte) bool {
 	eml, err := parseEmail(message)
 	if err != nil {
-		logger.Printf("ERROR: parsing email: %q", err)
+		glog.Errorf("parsing email: %q", err)
 		return false
 	}
 	sender := findSender(eml)
 	recipients := findRecipients(eml)
 	if err := m.Send(sender, recipients, message); err != nil {
-		logger.Printf("ERROR: sending from %q to %v: %q", sender, recipients, err)
+		glog.Errorf("sending from %q to %v: %q", sender, recipients, err)
 		return false
 	}
 	return true
