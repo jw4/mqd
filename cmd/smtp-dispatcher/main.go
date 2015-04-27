@@ -5,24 +5,23 @@ import (
 	"os"
 	"time"
 
+	config "github.com/johnweldon/mqd/config"
 	"github.com/johnweldon/mqd/dispatcher"
 	"github.com/johnweldon/mqd/mailer"
 )
 
 const (
-	// TODO(jw4) fix
-	mailqueuefolder = "C:\\build\\temp\\mailqueue"
-	settingsfile    = ".smtp-dispatcher.settings"
+	settingsfile = ".smtp-dispatcher.settings"
 )
 
 func main() {
-	q := dispatcher.NewPickupFolderQueue(mailqueuefolder)
-	m := mailer.NewMailer()
-	err := m.LoadSettings(mailer.ReadSettingsFile(settingsfile))
+	settings, err := config.ReadSettings(settingsfile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "FATAL: couldn't read settings %q\n", err)
 		os.Exit(-1)
 	}
+	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail)
+	m := mailer.NewMailer(settings)
 
 	loop(q, m)
 }

@@ -10,13 +10,16 @@ import (
 var logger = log.New(os.Stderr, "mqd.dispatcher: ", log.Lshortfile)
 
 type folderQueue struct {
-	folder string
+	mailqueue string
+	badmail   string
 }
 
-func NewPickupFolderQueue(path string) MailQueueDispatcher { return &folderQueue{folder: path} }
+func NewPickupFolderQueue(mailqueue, badmail string) MailQueueDispatcher {
+	return &folderQueue{mailqueue: mailqueue, badmail: badmail}
+}
 
 func (q *folderQueue) Process(callbackFn MailQueueCallbackFn) error {
-	return filepath.Walk(q.folder, processItem(q.folder, callbackFn))
+	return filepath.Walk(q.mailqueue, processItem(q.mailqueue, callbackFn))
 }
 
 func processItem(root string, fn MailQueueCallbackFn) filepath.WalkFunc {
