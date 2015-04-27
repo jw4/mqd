@@ -25,7 +25,7 @@ type Settings struct {
 }
 
 func NewSettings(mailqueue, badmail string) Settings {
-	return Settings{Connections: map[string]ConnectionDetails{}, MailQueue: mailqueue, BadMail: badmail}
+	return Settings{Connections: map[string]ConnectionDetails{}, MailQueue: mailqueue, BadMail: badmail, Interval: 30}
 }
 
 func ReadSettings(path string) (Settings, error) {
