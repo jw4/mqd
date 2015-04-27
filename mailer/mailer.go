@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/mail"
 	"net/smtp"
 	"os"
 
-	js "github.com/johnweldon/mqd/smtp"
+	mqd_smtp "github.com/johnweldon/mqd/smtp"
 )
 
 var logger = log.New(os.Stderr, "mqd.mailer: ", log.Lshortfile)
@@ -45,7 +46,7 @@ func (d *ConnectionDetails) Auth() (smtp.Auth, error) {
 
 	switch d.AuthType {
 	case LoginAuth:
-		return js.LoginAuth(d.Username, d.Password), nil
+		return mqd_smtp.LoginAuth(d.Username, d.Password), nil
 	case PlainAuth:
 		return smtp.PlainAuth("", d.Username, d.Password, d.Host), nil
 	}
@@ -61,47 +62,101 @@ func NewMailer() Mailer {
 	return &smtpMailer{settings: NewSettings()}
 }
 
-func (m *smtpMailer) LoadSettings(data []byte) error {
-	s := NewSettings()
-	err := json.Unmarshal(data, &s)
-	if err != nil {
-		return err
+func (m *smtpMailer) LoadSettings(s *Settings) error {
+	if s == nil {
+		return fmt.Errorf("passed in settings pointer is nil")
 	}
-
 	for key, val := range s.Connections {
 		m.settings.Connections[key] = val
 	}
 	return nil
 }
 
-func (m *smtpMailer) Send(sender string, message []byte) error {
+func (m *smtpMailer) Send(sender string, recipients []string, message []byte) error {
 	if connection, ok := m.settings.Connections[sender]; ok {
 		auth, err := connection.Auth()
 		if err != nil {
 			return err
 		}
-		return smtp.SendMail(connection.Server, auth, connection.Sender, findRecipients(&message), message)
+		return smtp.SendMail(connection.Server, auth, connection.Sender, recipients, message)
 	}
 	return fmt.Errorf("no connection settings found for %q", sender)
 }
 
-func findRecipients(msg *[]byte) []string {
-	//logger.Printf("findRecipients(msg: %q)", string(*msg))
-	recipients := []string{}
-	if msg == nil {
-		return recipients
-	}
-
-	buf := bytes.NewBuffer(*msg)
-	eml, err := mail.ReadMessage(buf)
+func (m *smtpMailer) ConvertAndSend(message []byte) bool {
+	eml, err := parseEmail(message)
 	if err != nil {
-		return recipients
+		logger.Printf("ERROR: parsing email: %q", err)
+		return false
 	}
-
-	return getPossibleSlices(eml.Header, "To", "Cc", "Bcc")
+	sender := findSender(eml)
+	recipients := findRecipients(eml)
+	if err := m.Send(sender, recipients, message); err != nil {
+		logger.Printf("ERROR: sending from %q to %v: %q", sender, recipients, err)
+		return false
+	}
+	return true
 }
 
-func getPossibleSlices(in map[string][]string, keys ...string) []string {
+func ReadSettingsFile(path string) *Settings {
+	s := NewSettings()
+	if raw, err := ioutil.ReadFile(path); err == nil {
+		if err := unmarshalSettings(raw, &s); err != nil {
+			logger.Printf("ERROR: unmarshalSettings(raw: %q) : %q", string(raw), err)
+		}
+	}
+	return &s
+}
+
+func WriteSettingsFile(path string, s *Settings) error {
+	fi, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer fi.Close()
+
+	bytes, err := json.MarshalIndent(*s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	_, err = fi.Write(bytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func unmarshalSettings(data []byte, s *Settings) error { return json.Unmarshal(data, s) }
+
+func parseEmail(msg []byte) (*mail.Message, error) {
+	if msg == nil {
+		return nil, fmt.Errorf("nil message")
+	}
+	return mail.ReadMessage(bytes.NewBuffer(msg))
+}
+
+func findSender(eml *mail.Message) string {
+	if eml == nil {
+		return ""
+	}
+	senders := getMatchingSlices(eml.Header, "X-Sender", "From")
+	if len(senders) < 1 {
+		return ""
+	}
+	return senders[0]
+}
+
+func findRecipients(eml *mail.Message) []string {
+	recipients := []string{}
+	if eml == nil {
+		return recipients
+	}
+	return getMatchingSlices(eml.Header, "To", "Cc", "Bcc")
+}
+
+func getMatchingSlices(in map[string][]string, keys ...string) []string {
 	slice := []string{}
 	for _, key := range keys {
 		if items, ok := in[key]; ok {

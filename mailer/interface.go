@@ -1,6 +1,7 @@
 package mailer
 
 type Mailer interface {
-	LoadSettings(json []byte) error
-	Send(sender string, message []byte) error
+	LoadSettings(*Settings) error
+	Send(sender string, recipients []string, message []byte) error
+	ConvertAndSend(email []byte) bool
 }

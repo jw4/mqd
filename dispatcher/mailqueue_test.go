@@ -8,23 +8,6 @@ import (
 	"github.com/johnweldon/mqd/dispatcher"
 )
 
-type testContext struct {
-	folder string
-}
-
-func (tc *testContext) addFile(t *testing.T, contents string) {
-	f, err := ioutil.TempFile(tc.folder, "test_file")
-	if err != nil {
-		t.Fatalf("problem creating temp file: %q", err)
-	}
-	defer f.Close()
-
-	_, err = f.Write([]byte(contents))
-	if err != nil {
-		t.Fatalf("problem writing temp file: %q", err)
-	}
-}
-
 func TestProcess(t *testing.T) {
 	tc := testContext{}
 	defer initializeAndTearDown(t, &tc)()
@@ -61,5 +44,22 @@ func initializeAndTearDown(t *testing.T, tc *testContext) func() {
 		if err := os.RemoveAll(folder); err != nil {
 			t.Errorf("problem removing %q: %q", folder, err)
 		}
+	}
+}
+
+type testContext struct {
+	folder string
+}
+
+func (tc *testContext) addFile(t *testing.T, contents string) {
+	f, err := ioutil.TempFile(tc.folder, "test_file")
+	if err != nil {
+		t.Fatalf("problem creating temp file: %q", err)
+	}
+	defer f.Close()
+
+	_, err = f.Write([]byte(contents))
+	if err != nil {
+		t.Fatalf("problem writing temp file: %q", err)
 	}
 }

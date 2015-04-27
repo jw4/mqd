@@ -3,7 +3,7 @@ package smtp
 import (
 	"fmt"
 	"log"
-	ns "net/smtp"
+	net_smtp "net/smtp"
 	"os"
 	"strings"
 )
@@ -15,11 +15,11 @@ type loginAuth struct {
 	password []byte
 }
 
-func LoginAuth(username, password string) ns.Auth {
+func LoginAuth(username, password string) net_smtp.Auth {
 	return &loginAuth{username: []byte(username), password: []byte(password)}
 }
 
-func (l *loginAuth) Start(server *ns.ServerInfo) (string, []byte, error) {
+func (l *loginAuth) Start(server *net_smtp.ServerInfo) (string, []byte, error) {
 	//logger.Printf("Start(server: %+v)", *server)
 	return "LOGIN", []byte{}, nil
 }
