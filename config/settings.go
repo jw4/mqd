@@ -21,6 +21,7 @@ type Settings struct {
 	Connections map[string]ConnectionDetails `json:"connections"`
 	MailQueue   string                       `json:"mailqueue"`
 	BadMail     string                       `json:"badmail"`
+	Interval    int                          `json:"interval"`
 }
 
 func NewSettings(mailqueue, badmail string) Settings {
@@ -40,6 +41,9 @@ func ReadSettings(path string) (Settings, error) {
 		return s, err
 	}
 
+	if s.Interval < 5 || s.Interval > 3600 {
+		s.Interval = 30
+	}
 	return s, nil
 }
 

@@ -23,13 +23,14 @@ func main() {
 	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail)
 	m := mailer.NewMailer(settings)
 
-	loop(q, m)
+	loop(settings.Interval, q, m)
 }
 
-func loop(q dispatcher.MailQueueDispatcher, m mailer.Mailer) {
+func loop(interval int, q dispatcher.MailQueueDispatcher, m mailer.Mailer) {
+	q.Process(m.ConvertAndSend)
 	for {
 		select {
-		case <-time.After(15 * time.Second):
+		case <-time.After(time.Duration(interval) * time.Second):
 			q.Process(m.ConvertAndSend)
 		}
 	}
