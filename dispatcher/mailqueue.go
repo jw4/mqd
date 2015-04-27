@@ -19,14 +19,14 @@ func NewPickupFolderQueue(mailqueue, badmail string) MailQueueDispatcher {
 }
 
 func (q *folderQueue) Process(callbackFn MailQueueCallbackFn) error {
-	return filepath.Walk(q.mailqueue, processItem(q.mailqueue, callbackFn))
+	return filepath.Walk(q.mailqueue, q.processItem(callbackFn))
 }
 
-func processItem(root string, fn MailQueueCallbackFn) filepath.WalkFunc {
+func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err2 error) error {
 		logger.Printf("INFO: processing %q", path)
 		if info.IsDir() {
-			if path == root {
+			if path == q.mailqueue {
 				return nil
 			}
 			return filepath.SkipDir
@@ -34,22 +34,30 @@ func processItem(root string, fn MailQueueCallbackFn) filepath.WalkFunc {
 
 		raw, err := ioutil.ReadFile(path)
 		if err != nil {
-			// TODO(jw4) move to badmail queue, maybe after a few retries
-			logger.Printf("ERROR: reading file %q: %q", path, err)
+			q.markBad(path, info)
 			return nil
 		}
 
 		if fn(raw) {
-			defer func() {
-				if err = os.Remove(path); err != nil {
-					// TODO(jw4)  possibly mark for deletion somehow
-					logger.Printf("ERROR: removing file %q: %q", path, err)
-				}
-			}()
+			q.markComplete(path)
 		} else {
-			// TODO(jw4) move to badmail queue, or possibly retry a few times
-			logger.Printf("ERROR: processing %q was unsuccessful", path)
+			q.markBad(path, info)
 		}
 		return nil
+	}
+}
+
+func (q *folderQueue) markBad(path string, info os.FileInfo) {
+	logger.Printf("ERROR: processing %q was unsuccessful", path)
+	target := filepath.Join(q.badmail, info.Name())
+	err := os.Rename(path, target)
+	if err != nil {
+		logger.Printf("ERROR: moving %q to %q: %q", path, target, err)
+	}
+}
+
+func (q *folderQueue) markComplete(path string) {
+	if err := os.Remove(path); err != nil {
+		logger.Printf("ERROR: removing file %q: %q", path, err)
 	}
 }

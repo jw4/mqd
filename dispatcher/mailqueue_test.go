@@ -14,11 +14,11 @@ func TestProcess(t *testing.T) {
 
 	tc.addFile(t, "From: foo@bar.com\r\nTo: baz@bar.com\r\nSubject: Hello\r\n\r\nMessage body here\r\n")
 
-	if tc.folder == "" {
+	if tc.mailqueue == "" {
 		t.Fatal("temp mailqueue folder not created")
 	}
 
-	q := dispatcher.NewPickupFolderQueue(tc.folder)
+	q := dispatcher.NewPickupFolderQueue(tc.mailqueue, tc.badmail)
 	err := q.Process(testCallback(t))
 	if err != nil {
 		t.Fatalf("Process call failed: %q", err)
@@ -33,26 +33,37 @@ func testCallback(t *testing.T) dispatcher.MailQueueCallbackFn {
 }
 
 func initializeAndTearDown(t *testing.T, tc *testContext) func() {
-	folder, err := ioutil.TempDir("", "dispatcher_test_queue")
+	q, err := ioutil.TempDir("", "dispatcher_test_mailqueue")
 	if err != nil {
-		t.Fatalf("error creating tempdir %q", err)
+		t.Fatalf("error creating temp folder: %q", err)
 		return func() {}
 	}
-	t.Logf("new folder: %q", folder)
-	tc.folder = folder
+	tc.mailqueue = q
+
+	b, err := ioutil.TempDir("", "dispatcher_test_badmail")
+	if err != nil {
+		t.Fatalf("error creating temp folder: %q", err)
+		return func() {}
+	}
+	tc.badmail = b
+
 	return func() {
-		if err := os.RemoveAll(folder); err != nil {
-			t.Errorf("problem removing %q: %q", folder, err)
+		if err := os.RemoveAll(q); err != nil {
+			t.Errorf("problem removing %q: %q", q, err)
+		}
+		if err := os.RemoveAll(b); err != nil {
+			t.Errorf("problem removing %q: %q", b, err)
 		}
 	}
 }
 
 type testContext struct {
-	folder string
+	mailqueue string
+	badmail   string
 }
 
 func (tc *testContext) addFile(t *testing.T, contents string) {
-	f, err := ioutil.TempFile(tc.folder, "test_file")
+	f, err := ioutil.TempFile(tc.mailqueue, "test_file")
 	if err != nil {
 		t.Fatalf("problem creating temp file: %q", err)
 	}
