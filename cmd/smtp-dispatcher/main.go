@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
-	"strings"
+	"os/signal"
 	"time"
+
+	"gopkg.in/tomb.v2"
 
 	"github.com/golang/glog"
 
@@ -15,57 +16,65 @@ import (
 )
 
 var (
-	settingsfile = ".smtp-dispatcher.settings"
+	settingsfile     = ".smtp-dispatcher.settings"
+	generateSettings = false
+	settings         config.Settings
 )
 
 func init() {
 	flag.StringVar(&settingsfile, "settingsfile", settingsfile, "json encoded settings file")
 	flag.StringVar(&settingsfile, "sf", settingsfile, "json encoded settings file (short version)")
-}
 
-func printHelp() {
-	fmt.Fprintf(os.Stdout, "Usage: %s [ run | generate ]\n\n run: run the mailqueue dispatcher\n generate: generate settings file\n\n", os.Args[0])
-	flag.PrintDefaults()
-	os.Exit(1)
+	flag.BoolVar(&generateSettings, "generate", generateSettings, "generate settings file")
+	flag.BoolVar(&generateSettings, "g", generateSettings, "generate settings file (short version)")
+
+	flag.Set("log_dir", ".")
 }
 
 func main() {
 	flag.Parse()
 
-	if len(flag.Args()) != 1 {
-		printHelp()
-	}
-
-	switch strings.ToLower(flag.Arg(0)) {
-	case "run":
-		runLoop()
-	case "generate":
+	if generateSettings {
 		generate()
-	default:
-		printHelp()
+		return
 	}
-}
 
-func runLoop() {
-	settings, err := config.ReadSettings(settingsfile)
+	s, err := config.ReadSettings(settingsfile)
 	if err != nil {
 		glog.Fatalf("couldn't read settings %q\n", err)
 		os.Exit(2)
 	}
+
+	settings = s
+	runLoop()
+	os.Exit(0)
+}
+
+func runLoop() {
 	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail)
 	m := mailer.NewMailer(settings)
 
-	loop(settings.Interval, q, m)
-}
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, os.Kill)
 
-func loop(interval int, q dispatcher.MailQueueDispatcher, m mailer.Mailer) {
-	q.Process(m.ConvertAndSend)
-	for {
-		select {
-		case <-time.After(time.Duration(interval) * time.Second):
-			q.Process(m.ConvertAndSend)
+	var t tomb.Tomb
+	t.Go(func() error {
+		q.Process(m.ConvertAndSend)
+		for {
+			select {
+			case s := <-c:
+				glog.Infof("got signal %v", s)
+				glog.Flush()
+				return nil
+			case <-t.Dying():
+				return nil
+			case <-time.After(time.Duration(settings.Interval) * time.Second):
+				q.Process(m.ConvertAndSend)
+				glog.Flush()
+			}
 		}
-	}
+	})
+	t.Wait()
 }
 
 func generate() {
