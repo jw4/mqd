@@ -21,4 +21,4 @@ run `./smtp-dispatcher.exe install`, and `./smtp-dispatcher.exe start`
 to start monitoring the mailqueue folder and sending emails.
 
 
-![gopher mascot](https://github.com/johnweldon/mqd/blob/master/img/smtp-dispatcher-gopher.png)
+![gopher mascot](img/smtp-dispatcher-gopher.png)
