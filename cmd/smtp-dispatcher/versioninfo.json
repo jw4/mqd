@@ -1,0 +1,41 @@
+{
+  "FixedFileInfo": {
+    "FileVersion": {
+      "Major": 0,
+      "Minor": 9,
+      "Patch": 0,
+      "Build": 0
+    },
+    "ProductVersion": {
+      "Major": 0,
+      "Minor": 9,
+      "Patch": 0,
+      "Build": 20150428
+    },
+    "FileFlagsMask": "3f",
+    "FileFlags ": "00",
+    "FileOS": "040004",
+    "FileType": "01",
+    "FileSubType": "00"
+  },
+  "StringFileInfo": {
+    "Comments": "Mail Queue Dispatcher Service",
+    "CompanyName": "John Weldon Consulting",
+    "FileDescription": "Mail Queue Dispatcher",
+    "FileVersion": "0.9.0.0",
+    "InternalName": "smtp-dispatcher",
+    "LegalCopyright": "© John Weldon. Licensed under the MIT License, 2015",
+    "LegalTrademarks": "",
+    "OriginalFilename": "smtp-dispatcher",
+    "PrivateBuild": "",
+    "ProductName": "Mail Queue Dispatcher",
+    "ProductVersion": "0.9.0.20150428",
+    "SpecialBuild": ""
+  },
+  "VarFileInfo": {
+    "Translation": {
+      "LangID": "0409",
+      "CharsetID": "04B0"
+    }
+  }
+}
