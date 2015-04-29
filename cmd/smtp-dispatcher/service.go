@@ -27,6 +27,10 @@ type service struct {
 	settingsfile string
 }
 
+// Execute fulfills the Handler interface from winsvc.svc
+//
+// Execute will be called by the package code at the start of
+// the service, and the service will exit once Execute completes.
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown | svc.AcceptPauseAndContinue
 	changes <- svc.Status{State: svc.StartPending}

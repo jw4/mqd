@@ -2,14 +2,13 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mailer_test
+package mailer
 
 import (
 	"net/smtp"
 	"testing"
 
 	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
-	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/mailer"
 )
 
 func TestFindSender(t *testing.T) {
@@ -26,12 +25,12 @@ func TestFindSender(t *testing.T) {
 
 	for ix, test := range tests {
 		t.Logf("Test %d", ix)
-		msg, err := mailer.ParseEmail(test.message)
+		msg, err := parseEmail(test.message)
 		if err != nil {
 			t.Error(err)
 		}
 
-		sender := mailer.FindSender(msg)
+		sender := findSender(msg)
 		if sender != test.sender {
 			t.Errorf("sender incorrect, expected %q got %q", test.sender, sender)
 		}
@@ -49,11 +48,11 @@ func TestFindRecipients(t *testing.T) {
 
 	for ix, test := range tests {
 		t.Logf("Test %d", ix)
-		msg, err := mailer.ParseEmail(test.message)
+		msg, err := parseEmail(test.message)
 		if err != nil {
 			t.Error(err)
 		}
-		recipients := mailer.FindRecipients(msg)
+		recipients := findRecipients(msg)
 		if len(recipients) != len(test.recipients) {
 			t.Errorf("mismatch, expected %d recipients, got %d", len(test.recipients), len(recipients))
 		}
@@ -114,18 +113,28 @@ var (
         }}}`)
 )
 
-func testMailer(t *testing.T) mailer.Mailer {
+func testMailer(t *testing.T) Mailer {
 	cfg, err := config.UnmarshalSettings(testConfig)
 	if err != nil {
 		t.Errorf("unmarshal fail: %v", err)
 	}
 
-	m := mailer.NewMailer(cfg)
+	m := NewMailer(cfg)
 
 	fn := func(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
 		t.Logf("Sending.. addr: %q, auth: %s, from: %q, to: %v, len: %d", addr, a, from, to, len(msg))
 		return nil
 	}
-	mailer.DummySender(m, fn)
+	dummySender(m, fn)
 	return m
+}
+
+// dummySender stubs out the actual smtp.Send function to facilitate
+// testing.  It returns a func() that can be used in a defer statement
+// to restore the original Send function.
+func dummySender(m Mailer, sf senderFunc) func() {
+	sm := m.(*smtpMailer)
+	orig := sm.sendFn
+	sm.sendFn = senderFunc(sf)
+	return func() { sm.sendFn = orig }
 }

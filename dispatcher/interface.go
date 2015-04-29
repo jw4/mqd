@@ -4,8 +4,13 @@
 
 package dispatcher
 
+// MailQueueCallbackFn describes the callback mechanism the dispatcher
+// uses to transmit raw bytes representing an email to the mailer to
+// actually send.
 type MailQueueCallbackFn func([]byte) bool
 
+// MailQueueDispatcher describes the interface a dispatcher must
+// fulfill in order to use the MailQueueCallbackFn
 type MailQueueDispatcher interface {
 	Process(MailQueueCallbackFn) error
 }

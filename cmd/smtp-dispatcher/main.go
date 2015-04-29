@@ -4,6 +4,25 @@
 
 //go:generate goversioninfo -icon=../../img/smtp-dispatcher-gopher.ico
 
+/*
+smtp-dispatcher is the command line executable used for testing and
+installing and controlling the mail-queue-dispatcher service.
+
+Simple usage:
+
+    smtp-dispatcher -g
+      to generate a sample .smtp-dispatcher.settings file
+
+    smtp-dispatcher install
+      to install the windows service 'MailQueueDispatcher'
+
+    smtp-dispatcher remove
+      to uninstall the service
+
+    smtp-dispatcher [ start | stop | pause | continue ]
+      to control the service
+
+*/
 package main
 
 import (

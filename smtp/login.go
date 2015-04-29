@@ -17,15 +17,21 @@ type loginAuth struct {
 	password []byte
 }
 
+// LoginAuth returns an smtp.Auth implementation for the LOGIN smtp
+// mechanism.
 func LoginAuth(username, password string) smtp.Auth {
 	return &loginAuth{username: []byte(username), password: []byte(password)}
 }
 
+// Start fulfills the smtp.Auth interface.  It returns information to
+// identify it's capabilities.
 func (l *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
 	glog.Infof("Start(server: %+v)", *server)
 	return "LOGIN", []byte{}, nil
 }
 
+// Next fulfills the smtp.Auth interface.  It responds to inputs from
+// the remote SMTP server until the authentication is complete or fails.
 func (l *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 	glog.Infof("Next(fromServer: %q, more: %t)", string(fromServer), more)
 	response := strings.ToLower(string(fromServer[:9]))

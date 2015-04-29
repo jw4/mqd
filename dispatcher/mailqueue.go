@@ -2,6 +2,12 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
+/*
+Package dispatcher provides the mechanism for watching and processing
+emails that appear in a designated pickup folder, and removes them
+after successfully sending them, or else moves the failed messages to
+the configured badmail folder.
+*/
 package dispatcher
 
 import (
@@ -17,10 +23,16 @@ type folderQueue struct {
 	badmail   string
 }
 
+// NewPickupFolderQueue returns an implementation of MailQueueDispatcher
+// that watches a mailqueue folder and consumes messages that are left
+// there and if it fails to consume the message, moves the message to a
+// badmail folder.
 func NewPickupFolderQueue(mailqueue, badmail string) MailQueueDispatcher {
 	return &folderQueue{mailqueue: mailqueue, badmail: badmail}
 }
 
+// Process implements the MailQueueDispatcher interface, and walks the
+// mailqueue folder and sends the found messages to the callbackFn.
 func (q *folderQueue) Process(callbackFn MailQueueCallbackFn) error {
 	return filepath.Walk(q.mailqueue, q.processItem(callbackFn))
 }

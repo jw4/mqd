@@ -10,13 +10,17 @@ import (
 	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
 )
 
+// EmailSender is an ad-hoc interface to describe the SendMail function
+// that is in the net/smtp package.
 type EmailSender interface {
 	SendMail(addr string, a smtp.Auth, from string, to []string, msg []byte) error
 }
 
+// Mailer describes an object that is able to send emails via the
+// EmailSender interface, and that can load settings and convert
+// raw email messages into sent mail.
 type Mailer interface {
 	EmailSender
 	LoadSettings(*config.Settings) error
-	Send(sender string, recipients []string, message []byte) error
 	ConvertAndSend(email []byte) bool
 }
