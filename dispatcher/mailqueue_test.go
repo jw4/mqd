@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/johnweldon/mqd/dispatcher"
+	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/dispatcher"
 )
 
 func TestProcess(t *testing.T) {

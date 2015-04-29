@@ -17,7 +17,7 @@ import (
 
 	"github.com/golang/glog"
 
-	config "github.com/johnweldon/mqd/config"
+	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
 )
 
 const (

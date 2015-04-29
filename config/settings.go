@@ -14,7 +14,7 @@ import (
 	"os"
 	"strings"
 
-	mqd_smtp "github.com/johnweldon/mqd/smtp"
+	mqd_smtp "gopkg.in/mail-queue-dispatcher/dispatcher.v0/smtp"
 )
 
 type SmtpAuthType string

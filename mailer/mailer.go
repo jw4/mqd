@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang/glog"
 
-	config "github.com/johnweldon/mqd/config"
+	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
 )
 
 type senderFunc func(addr string, a smtp.Auth, from string, to []string, msg []byte) error

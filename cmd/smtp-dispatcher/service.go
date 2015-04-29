@@ -16,9 +16,9 @@ import (
 	"code.google.com/p/winsvc/svc"
 	"github.com/golang/glog"
 
-	config "github.com/johnweldon/mqd/config"
-	"github.com/johnweldon/mqd/dispatcher"
-	"github.com/johnweldon/mqd/mailer"
+	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
+	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/dispatcher"
+	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/mailer"
 )
 
 var elog debug.Log

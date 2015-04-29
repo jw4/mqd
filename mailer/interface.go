@@ -7,7 +7,7 @@ package mailer
 import (
 	"net/smtp"
 
-	config "github.com/johnweldon/mqd/config"
+	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
 )
 
 type EmailSender interface {

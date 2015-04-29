@@ -8,8 +8,8 @@ import (
 	"net/smtp"
 	"testing"
 
-	config "github.com/johnweldon/mqd/config"
-	"github.com/johnweldon/mqd/mailer"
+	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
+	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/mailer"
 )
 
 func TestFindSender(t *testing.T) {
