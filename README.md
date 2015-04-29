@@ -1,5 +1,7 @@
 # Mail Queue Dispatcher
 
+[![GoDoc](https://godoc.org/gopkg.in/mail-queue-dispatcher/dispatcher.v0?status.svg)](https://godoc.org/gopkg.in/mail-queue-dispatcher/dispatcher.v0)
+
 The Mail Queue Dispatcher is a simple Windows service that watches a 
 mailqueue folder, looks up sender information, and transmits an email
 for each message it finds in the folder.
