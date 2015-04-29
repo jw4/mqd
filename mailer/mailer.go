@@ -67,11 +67,17 @@ func findSender(eml *mail.Message) string {
 	if eml == nil {
 		return ""
 	}
-	senders := getMatchingSlices(eml.Header, "X-Sender", "From")
+	senders := getEmails(eml.Header, "X-Sender", "From")
 	if len(senders) < 1 {
 		return ""
 	}
-	return senders[0]
+	for _, sender := range senders {
+		addr, err := mail.ParseAddress(sender)
+		if err == nil {
+			return addr.Address
+		}
+	}
+	return ""
 }
 
 func findRecipients(eml *mail.Message) []string {
@@ -79,14 +85,23 @@ func findRecipients(eml *mail.Message) []string {
 	if eml == nil {
 		return recipients
 	}
-	return getMatchingSlices(eml.Header, "To", "Cc", "Bcc")
+	return getEmails(eml.Header, "To", "Cc", "Bcc")
 }
 
-func getMatchingSlices(in map[string][]string, keys ...string) []string {
+func getEmails(in map[string][]string, keys ...string) []string {
 	slice := []string{}
 	for _, key := range keys {
 		if items, ok := in[key]; ok {
-			slice = append(slice, items...)
+			for _, item := range items {
+				list, err := mail.ParseAddressList(item)
+				if err != nil {
+					glog.Warningf("failed to email list %q: %v", item, err)
+				} else {
+					for _, addr := range list {
+						slice = append(slice, addr.Address)
+					}
+				}
+			}
 		}
 	}
 	return slice
