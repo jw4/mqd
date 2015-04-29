@@ -105,19 +105,37 @@ func usage(message string) {
 }
 
 func generate() {
-	settings := config.NewSettings("mailqueue_folder_path", "badmail_folder_path")
-	settings.Connections["foo@bar.com"] = config.ConnectionDetails{
-		AuthType: config.PlainAuth,
-		Sender:   "foo@bar.com",
-		Server:   "smtp.example.com:587",
-		Host:     "smtp.example.com",
-		Username: "username",
-		Password: "P455w0rd",
+	buf := `{
+    "interval": 45,
+    "mailqueue": "c:\\mailqueue",
+    "badmail": "c:\\badmail",
+    "connections": {
+        "foo@bar.com": {
+        "sender": "foo@bar.com",
+        "server": "localhost:587",
+        "host": "localhost",
+        "authtype": "PLAIN",
+        "username": "asdf",
+        "password": "qwer"
+        },
+        "baz@foo.com": {
+        "sender": "baz@foo.com",
+        "server": "smtp.foo.com:587",
+        "host": "smtp.foo.com",
+        "authtype": "LOGIN",
+        "username": "baz@foo.com",
+        "password": "pazzwerd"
+        }
+    }}`
+	settings, err := config.UnmarshalSettings([]byte(buf))
+	if err != nil {
+		glog.Fatalf("couldn't read settings %q\n", err)
+		os.Exit(9)
 	}
 
 	if err := config.WriteSettings(settingsfile, settings); err != nil {
 		glog.Fatalf("couldn't write settings %q\n", err)
-		os.Exit(9)
+		os.Exit(10)
 	}
 	os.Exit(0)
 }

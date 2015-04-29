@@ -7,9 +7,12 @@ package mqd
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/mail"
 	"net/smtp"
 	"os"
+	"strings"
 
 	mqd_smtp "github.com/johnweldon/mqd/smtp"
 )
@@ -22,25 +25,44 @@ const (
 )
 
 type Settings struct {
-	Connections map[string]ConnectionDetails `json:"connections"`
+	connections map[string]ConnectionDetails `json:"connections"`
 	MailQueue   string                       `json:"mailqueue"`
 	BadMail     string                       `json:"badmail"`
 	Interval    int                          `json:"interval"`
 }
 
 func NewSettings(mailqueue, badmail string) Settings {
-	return Settings{Connections: map[string]ConnectionDetails{}, MailQueue: mailqueue, BadMail: badmail, Interval: 30}
+	return Settings{connections: map[string]ConnectionDetails{}, MailQueue: mailqueue, BadMail: badmail, Interval: 30}
 }
 
-func ReadSettings(path string) (Settings, error) {
-	s := Settings{}
-
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		return s, err
+func (s *Settings) ConnectionForSender(sender string) (ConnectionDetails, error) {
+	if details, ok := s.connections[sender]; ok {
+		return details, nil
 	}
+	addr, err := mail.ParseAddress(sender)
+	if err != nil {
+		return ConnectionDetails{}, err
+	}
+	if details, ok := s.connections[addr.Address]; ok {
+		return details, nil
+	}
+	if details, ok := s.connections[strings.ToLower(addr.Address)]; ok {
+		return details, nil
+	}
+	return ConnectionDetails{}, fmt.Errorf("connection details not found for %q", sender)
+}
 
-	err = unmarshalSettings(raw, &s)
+func ReadSettingsFrom(r io.Reader) (Settings, error) {
+	raw, err := ioutil.ReadAll(r)
+	if err != nil {
+		return Settings{}, err
+	}
+	return UnmarshalSettings(raw)
+}
+
+func UnmarshalSettings(raw []byte) (Settings, error) {
+	s := Settings{}
+	err := unmarshalSettings(raw, &s)
 	if err != nil {
 		return s, err
 	}

@@ -16,29 +16,31 @@ import (
 )
 
 type smtpMailer struct {
+	SendFn   SenderFunc
 	settings config.Settings
 }
 
 func NewMailer(s config.Settings) Mailer {
-	return &smtpMailer{settings: s}
+	return &smtpMailer{settings: s, SendFn: smtp.SendMail}
 }
 
 func (m *smtpMailer) LoadSettings(s config.Settings) error {
-	for key, val := range s.Connections {
-		m.settings.Connections[key] = val
-	}
+	m.settings = s
 	return nil
 }
 
 func (m *smtpMailer) Send(sender string, recipients []string, message []byte) error {
-	if connection, ok := m.settings.Connections[sender]; ok {
-		auth, err := connection.Auth()
-		if err != nil {
-			return err
-		}
-		return smtp.SendMail(connection.Server, auth, connection.Sender, recipients, message)
+	connection, err := m.settings.ConnectionForSender(sender)
+	if err != nil {
+		return err
 	}
-	return fmt.Errorf("no connection settings found for %q", sender)
+
+	auth, err := connection.Auth()
+	if err != nil {
+		return err
+	}
+
+	return m.SendMail(connection.Server, auth, connection.Sender, recipients, message)
 }
 
 func (m *smtpMailer) ConvertAndSend(message []byte) bool {
@@ -56,6 +58,10 @@ func (m *smtpMailer) ConvertAndSend(message []byte) bool {
 	return true
 }
 
+func (m *smtpMailer) SendMail(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+	return m.SendFn(addr, a, from, to, msg)
+}
+
 func parseEmail(msg []byte) (*mail.Message, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("nil message")
@@ -67,7 +73,7 @@ func findSender(eml *mail.Message) string {
 	if eml == nil {
 		return ""
 	}
-	senders := getEmails(eml.Header, "X-Sender", "From")
+	senders := getEmails(eml.Header, "From", "X-Sender")
 	if len(senders) < 1 {
 		return ""
 	}

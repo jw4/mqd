@@ -71,7 +71,13 @@ func (s *service) runDispatch() {
 }
 
 func (s *service) readSettings() config.Settings {
-	settings, err := config.ReadSettings(settingsfile)
+	var settings config.Settings
+	r, err := os.Open(settingsfile)
+	if err != nil {
+		glog.Errorf("couldn't read settings: %v", err)
+		settings = config.NewSettings("", "")
+	}
+	settings, err = config.ReadSettingsFrom(r)
 	if err != nil {
 		glog.Errorf("couldn't read settings: %v", err)
 		settings = config.NewSettings("", "")
