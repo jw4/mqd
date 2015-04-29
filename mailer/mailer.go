@@ -15,16 +15,18 @@ import (
 	config "github.com/johnweldon/mqd/config"
 )
 
+type senderFunc func(addr string, a smtp.Auth, from string, to []string, msg []byte) error
+
 type smtpMailer struct {
-	SendFn   SenderFunc
-	settings config.Settings
+	sendFn   senderFunc
+	settings *config.Settings
 }
 
-func NewMailer(s config.Settings) Mailer {
-	return &smtpMailer{settings: s, SendFn: smtp.SendMail}
+func NewMailer(s *config.Settings) Mailer {
+	return &smtpMailer{settings: s, sendFn: smtp.SendMail}
 }
 
-func (m *smtpMailer) LoadSettings(s config.Settings) error {
+func (m *smtpMailer) LoadSettings(s *config.Settings) error {
 	m.settings = s
 	return nil
 }
@@ -59,7 +61,7 @@ func (m *smtpMailer) ConvertAndSend(message []byte) bool {
 }
 
 func (m *smtpMailer) SendMail(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
-	return m.SendFn(addr, a, from, to, msg)
+	return m.sendFn(addr, a, from, to, msg)
 }
 
 func parseEmail(msg []byte) (*mail.Message, error) {

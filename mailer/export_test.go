@@ -9,3 +9,12 @@ var (
 	FindSender     = findSender
 	FindRecipients = findRecipients
 )
+
+type SenderFunc senderFunc
+
+func DummySender(m Mailer, sf SenderFunc) func() {
+	sm := m.(*smtpMailer)
+	orig := sm.sendFn
+	sm.sendFn = senderFunc(sf)
+	return func() { sm.sendFn = orig }
+}

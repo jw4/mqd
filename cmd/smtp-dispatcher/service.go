@@ -70,8 +70,8 @@ func (s *service) runDispatch() {
 	glog.Flush()
 }
 
-func (s *service) readSettings() config.Settings {
-	var settings config.Settings
+func (s *service) readSettings() *config.Settings {
+	var settings *config.Settings
 	r, err := os.Open(settingsfile)
 	if err != nil {
 		glog.Errorf("couldn't read settings: %v", err)
