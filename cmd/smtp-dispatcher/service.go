@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	"github.com/golang/sys/windows/svc"
-	"github.com/golang/sys/windows/svc/debug"
-	"github.com/golang/sys/windows/svc/eventlog"
-	"github.com/golang/sys/windows/svc/mgr"
+	"golang.org/x/sys/windows/svc"
+	"golang.org/x/sys/windows/svc/debug"
+	"golang.org/x/sys/windows/svc/eventlog"
+	"golang.org/x/sys/windows/svc/mgr"
 
 	config "github.com/jw4/mqd/config"
 	"github.com/jw4/mqd/dispatcher"
@@ -128,7 +128,7 @@ func startService(name string) error {
 	}
 	defer s.Close()
 
-	err = s.Start([]string{})
+	err = s.Start()
 	if err != nil {
 		return fmt.Errorf("could not start service %s: %v", name, err)
 	}

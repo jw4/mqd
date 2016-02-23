@@ -33,7 +33,7 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	"github.com/golang/sys/windows/svc"
+	"golang.org/x/sys/windows/svc"
 
 	config "github.com/jw4/mqd/config"
 )
