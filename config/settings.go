@@ -17,12 +17,12 @@ import (
 	mqd_smtp "github.com/jw4/mqd/smtp"
 )
 
-// SmtpAuthType names smtp authentication methods
-type SmtpAuthType string
+// SMTPAuthType names smtp authentication methods
+type SMTPAuthType string
 
 const (
-	LoginAuth SmtpAuthType = "LOGIN"
-	PlainAuth SmtpAuthType = "PLAIN"
+	LoginAuth SMTPAuthType = "LOGIN"
+	PlainAuth SMTPAuthType = "PLAIN"
 )
 
 // Settings holds the configuration parameters used by the mail queue
@@ -133,7 +133,7 @@ type ConnectionDetails struct {
 	Host string `json:"host,omitempty"`
 	// AuthType shows which authentication mechanism should be used
 	// when connecting to this Server.
-	AuthType SmtpAuthType `json:"authtype"`
+	AuthType SMTPAuthType `json:"authtype"`
 	// Username of the Sender account.
 	Username string `json:"username,omitempty"`
 	// Password of the Sender account.

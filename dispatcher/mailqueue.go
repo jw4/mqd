@@ -40,6 +40,10 @@ func (q *folderQueue) Process(callbackFn MailQueueCallbackFn) error {
 func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err2 error) error {
 		glog.V(2).Infof("processing %q", path)
+		if info == nil {
+			glog.Warningf("path not found for %q", path)
+			return nil
+		}
 		if info.IsDir() {
 			if path == q.mailqueue {
 				return nil

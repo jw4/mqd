@@ -117,14 +117,15 @@ func usage(message string) {
 	fmt.Fprintf(os.Stderr, "\n%s\n\n"+
 		"usage: %s <command>\n"+
 		"    where <command> is one of\n"+
-		"    install, remove, debug, start, stop, pause, or continue.\n\n",
-		message, os.Args[0])
+		"    install, remove, debug, start, stop, pause, or continue.\n\n"+
+		" or %s -g to generate the settings file.\n\n",
+		message, os.Args[0], os.Args[0])
 	os.Exit(8)
 }
 
 func generate() {
 	buf := `{
-    "interval": 45,
+    "interval": 47,
     "mailqueue": "c:\\mailqueue",
     "badmail": "c:\\badmail",
     "connections": {
