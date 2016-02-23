@@ -39,7 +39,7 @@ func (q *folderQueue) Process(callbackFn MailQueueCallbackFn) error {
 
 func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err2 error) error {
-		glog.Infof("processing %q", path)
+		glog.V(2).Infof("processing %q", path)
 		if info.IsDir() {
 			if path == q.mailqueue {
 				return nil
