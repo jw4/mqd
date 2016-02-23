@@ -2,11 +2,11 @@
 
 [![GoDoc](https://godoc.org/github.com/jw4/mqd?status.svg)](https://godoc.org/github.com/jw4/mqd)
 
-The Mail Queue Dispatcher is a simple Windows service that watches a 
+The Mail Queue Dispatcher is a simple Windows service that watches a
 mailqueue folder, looks up sender information, and transmits an email
 for each message it finds in the folder.
 
-If there is a problem, the message will be moved to the configured 
+If there is a problem, the message will be moved to the configured
 badmail folder.
 
 
@@ -21,6 +21,21 @@ creating or generating the `.smtp-dispatcher.settings` file, and
 modifying it to match your settings first. Then to install the service
 run `./smtp-dispatcher.exe install`, and `./smtp-dispatcher.exe start`
 to start monitoring the mailqueue folder and sending emails.
+
+
+## Building
+
+To generate the windows binary with the icon and resource info you can
+use `go generate github.com/jw4/mqd/cmd/smtp-dispatcher` after
+installing the fine tool by Joseph Spurrier:
+
+  `go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo`
+
+This should generate a .syso file which `go build` will use to
+incorporate the resource info into the binary when you finish up with:
+
+  `go build github.com/jw4/mqd/cmd/smtp-dispatcher`
+
 
 
 ![gopher mascot](img/smtp-dispatcher-gopher.png)
