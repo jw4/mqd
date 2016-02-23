@@ -10,11 +10,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"code.google.com/p/winsvc/debug"
-	"code.google.com/p/winsvc/eventlog"
-	"code.google.com/p/winsvc/mgr"
-	"code.google.com/p/winsvc/svc"
 	"github.com/golang/glog"
+	"github.com/golang/sys/windows/svc"
+	"github.com/golang/sys/windows/svc/debug"
+	"github.com/golang/sys/windows/svc/eventlog"
+	"github.com/golang/sys/windows/svc/mgr"
 
 	config "github.com/jw4/mqd/config"
 	"github.com/jw4/mqd/dispatcher"

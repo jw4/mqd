@@ -32,8 +32,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"code.google.com/p/winsvc/svc"
 	"github.com/golang/glog"
+	"github.com/golang/sys/windows/svc"
 
 	config "github.com/jw4/mqd/config"
 )
