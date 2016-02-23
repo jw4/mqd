@@ -1,4 +1,4 @@
-// Copyright 2015 John Weldon. All rights reserved.
+// Copyright 2015-2016 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
@@ -14,7 +14,7 @@ import (
 	"os"
 	"strings"
 
-	mqd_smtp "gopkg.in/mail-queue-dispatcher/dispatcher.v0/smtp"
+	mqd_smtp "github.com/jw4/mqd/smtp"
 )
 
 // SmtpAuthType names smtp authentication methods

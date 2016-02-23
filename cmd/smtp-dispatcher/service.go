@@ -1,4 +1,4 @@
-// Copyright 2015 John Weldon. All rights reserved.
+// Copyright 2015-2016 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
@@ -16,9 +16,9 @@ import (
 	"code.google.com/p/winsvc/svc"
 	"github.com/golang/glog"
 
-	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
-	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/dispatcher"
-	"gopkg.in/mail-queue-dispatcher/dispatcher.v0/mailer"
+	config "github.com/jw4/mqd/config"
+	"github.com/jw4/mqd/dispatcher"
+	"github.com/jw4/mqd/mailer"
 )
 
 var elog debug.Log

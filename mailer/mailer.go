@@ -1,4 +1,4 @@
-// Copyright 2015 John Weldon. All rights reserved.
+// Copyright 2015-2016 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang/glog"
 
-	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
+	config "github.com/jw4/mqd/config"
 )
 
 type senderFunc func(addr string, a smtp.Auth, from string, to []string, msg []byte) error

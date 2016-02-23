@@ -1,4 +1,4 @@
-// Copyright 2015 John Weldon. All rights reserved.
+// Copyright 2015-2016 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
@@ -7,7 +7,7 @@ package mailer
 import (
 	"net/smtp"
 
-	config "gopkg.in/mail-queue-dispatcher/dispatcher.v0/config"
+	config "github.com/jw4/mqd/config"
 )
 
 // EmailSender is an ad-hoc interface to describe the SendMail function

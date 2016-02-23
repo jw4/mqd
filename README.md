@@ -1,6 +1,6 @@
 # Mail Queue Dispatcher
 
-[![GoDoc](https://godoc.org/gopkg.in/mail-queue-dispatcher/dispatcher.v0?status.svg)](https://godoc.org/gopkg.in/mail-queue-dispatcher/dispatcher.v0)
+[![GoDoc](https://godoc.org/github.com/jw4/mqd?status.svg)](https://godoc.org/github.com/jw4/mqd)
 
 The Mail Queue Dispatcher is a simple Windows service that watches a 
 mailqueue folder, looks up sender information, and transmits an email
@@ -12,9 +12,9 @@ badmail folder.
 
 ## Usage
 
-To get the program, just run `go get github.com/johnweldon/mqd`
+To get the program, just run `go get github.com/jw4/mqd`
 
-To install: `go install github.com/johnweldon/mqd/cmd/smtp-dispatcher`
+To install: `go install github.com/jw4/mqd/cmd/smtp-dispatcher`
 This will install the binary in your GOPATH, but to install the windows
 service, I recommend copying the executable into its own folder and then
 creating or generating the `.smtp-dispatcher.settings` file, and
