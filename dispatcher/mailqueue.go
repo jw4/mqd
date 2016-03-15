@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/golang/glog"
 )
@@ -21,14 +22,16 @@ import (
 type folderQueue struct {
 	mailqueue string
 	badmail   string
+	sentmail  string
 }
 
 // NewPickupFolderQueue returns an implementation of MailQueueDispatcher
 // that watches a mailqueue folder and consumes messages that are left
 // there and if it fails to consume the message, moves the message to a
-// badmail folder.
-func NewPickupFolderQueue(mailqueue, badmail string) MailQueueDispatcher {
-	return &folderQueue{mailqueue: mailqueue, badmail: badmail}
+// badmail folder. If sentmail is a valid folder, successful emails will
+// be moved there after sending.
+func NewPickupFolderQueue(mailqueue string, badmail string, sentmail string) MailQueueDispatcher {
+	return &folderQueue{mailqueue: mailqueue, badmail: badmail, sentmail: sentmail}
 }
 
 // Process implements the MailQueueDispatcher interface, and walks the
@@ -58,7 +61,7 @@ func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 		}
 
 		if fn(raw) {
-			q.markComplete(path)
+			q.markComplete(path, info)
 		} else {
 			q.markBad(path, info)
 		}
@@ -69,14 +72,18 @@ func (q *folderQueue) processItem(fn MailQueueCallbackFn) filepath.WalkFunc {
 func (q *folderQueue) markBad(path string, info os.FileInfo) {
 	glog.Errorf("processing %q was unsuccessful", path)
 	target := filepath.Join(q.badmail, info.Name())
-	err := os.Rename(path, target)
-	if err != nil {
+	if err := os.Rename(path, target); err != nil {
 		glog.Errorf("moving %q to %q: %q", path, target, err)
 	}
 }
 
-func (q *folderQueue) markComplete(path string) {
-	if err := os.Remove(path); err != nil {
+func (q *folderQueue) markComplete(path string, info os.FileInfo) {
+	if sm, err := os.Stat(q.sentmail); err == nil && sm.IsDir() {
+		target := filepath.Join(q.sentmail, time.Now().Format("2006-01-02_150405-")+info.Name()+".sent")
+		if err = os.Rename(path, target); err != nil {
+			glog.Errorf("moving %q to %q: %q", path, target, err)
+		}
+	} else if err := os.Remove(path); err != nil {
 		glog.Errorf("removing file %q: %q", path, err)
 	}
 }

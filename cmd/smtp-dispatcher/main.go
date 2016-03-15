@@ -72,6 +72,7 @@ func main() {
 		os.Exit(2)
 	}
 
+	glog.Infof("starting up... interactive? %t", interactive)
 	if !interactive {
 		runService(svcName, false)
 		return
@@ -128,6 +129,7 @@ func generate() {
     "interval": 47,
     "mailqueue": "c:\\mailqueue",
     "badmail": "c:\\badmail",
+    "sentmail": "c:\\sentmail",
     "connections": {
         "foo@bar.com": {
         "sender": "foo@bar.com",

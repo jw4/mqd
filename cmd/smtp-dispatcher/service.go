@@ -68,7 +68,7 @@ loop:
 
 func (s *service) runDispatch() {
 	settings := s.readSettings()
-	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail)
+	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail, settings.SentMail)
 	m := mailer.NewMailer(settings)
 	q.Process(m.ConvertAndSend)
 	glog.Flush()

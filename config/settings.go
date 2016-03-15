@@ -31,13 +31,14 @@ type Settings struct {
 	C         map[string]ConnectionDetails `json:"connections"`
 	MailQueue string                       `json:"mailqueue"`
 	BadMail   string                       `json:"badmail"`
+	SentMail  string                       `json:"sentmail"`
 	Interval  int                          `json:"interval"`
 }
 
 // NewSettings generates a new Settings configuration, initializing it
 // with the supplied mailqueue and badmail folders, and an empty map
 // of connection details.
-func NewSettings(mailqueue, badmail string) *Settings {
+func NewSettings(mailqueue string, badmail string) *Settings {
 	return &Settings{C: map[string]ConnectionDetails{}, MailQueue: mailqueue, BadMail: badmail, Interval: 30}
 }
 
@@ -164,4 +165,6 @@ func (d *ConnectionDetails) String() string {
 		d.Sender, d.AuthType, d.Server, d.Host, d.Username)
 }
 
-func unmarshalSettings(data []byte, s *Settings) error { return json.Unmarshal(data, s) }
+func unmarshalSettings(data []byte, s *Settings) error {
+	return json.Unmarshal(data, s)
+}

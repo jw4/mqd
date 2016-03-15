@@ -22,7 +22,7 @@ func TestProcess(t *testing.T) {
 		t.Fatal("temp mailqueue folder not created")
 	}
 
-	q := dispatcher.NewPickupFolderQueue(tc.mailqueue, tc.badmail)
+	q := dispatcher.NewPickupFolderQueue(tc.mailqueue, tc.badmail, "")
 	err := q.Process(testCallback(t))
 	if err != nil {
 		t.Fatalf("Process call failed: %q", err)
