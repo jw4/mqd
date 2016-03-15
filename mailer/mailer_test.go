@@ -20,6 +20,9 @@ func TestFindSender(t *testing.T) {
 		sender:  "asdf@qwer.ty",
 	}, {
 		message: []byte("X-Sender: asdf@qwer.ty\r\nFrom: qwer@qwer.ty\r\n\r\nasdf\r\n"),
+		sender:  "asdf@qwer.ty",
+	}, {
+		message: []byte("X-Sender: qwer@qwer.ty\r\nFrom: asdf@qwer.ty\r\n\r\nasdf\r\n"),
 		sender:  "qwer@qwer.ty",
 	}}
 
@@ -45,7 +48,7 @@ func TestFindRecipients(t *testing.T) {
 		message:    []byte("To: asdf@wert.yo, qwer@asdf.gh\r\nCc: qwer@qwer.yt\r\nBcc: zxcv@zxcv.as\r\n\r\nasdf\r\n"),
 		recipients: []string{"asdf@wert.yo", "qwer@asdf.gh", "qwer@qwer.yt", "zxcv@zxcv.as"},
 	}, {
-		message:    []byte("To: asdf@wert.yo\r\nBcc: zxcv@zxcv.as\r\nX-Receiver: \"Yummy Gummy\" <yummy@gummy.br>\r\n\r\nasdf\r\n"),
+		message:    []byte("To: asdf@wert.yo\r\nCc: yummy@gummy.br\r\nBcc: zxcv@zxcv.as\r\nX-Receiver: \"Yummy Gummy\" <yummy@gummy.br>\r\n\r\nasdf\r\n"),
 		recipients: []string{"asdf@wert.yo", "zxcv@zxcv.as", "yummy@gummy.br"},
 	}}
 

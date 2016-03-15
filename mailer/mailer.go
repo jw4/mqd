@@ -85,14 +85,24 @@ func findSender(eml *mail.Message) string {
 	if eml == nil {
 		return ""
 	}
-	senders := getEmails(eml.Header, "From", "X-Sender")
-	if len(senders) < 1 {
-		return ""
+	// prefer X-Sender
+	senders := getEmails(eml.Header, "X-Sender")
+	if len(senders) > 0 {
+		for _, sender := range senders {
+			addr, err := mail.ParseAddress(sender)
+			if err == nil {
+				return addr.Address
+			}
+		}
 	}
-	for _, sender := range senders {
-		addr, err := mail.ParseAddress(sender)
-		if err == nil {
-			return addr.Address
+	// fallback to From
+	senders = getEmails(eml.Header, "From")
+	if len(senders) > 0 {
+		for _, sender := range senders {
+			addr, err := mail.ParseAddress(sender)
+			if err == nil {
+				return addr.Address
+			}
 		}
 	}
 	return ""
@@ -107,7 +117,7 @@ func findRecipients(eml *mail.Message) []string {
 }
 
 func getEmails(in map[string][]string, keys ...string) []string {
-	slice := []string{}
+	itemMap := map[string]interface{}{}
 	for _, key := range keys {
 		if items, ok := in[key]; ok {
 			for _, item := range items {
@@ -116,11 +126,15 @@ func getEmails(in map[string][]string, keys ...string) []string {
 					glog.Warningf("failed to email list %q: %v", item, err)
 				} else {
 					for _, addr := range list {
-						slice = append(slice, addr.Address)
+						itemMap[addr.Address] = nil
 					}
 				}
 			}
 		}
+	}
+	slice := []string{}
+	for k := range itemMap {
+		slice = append(slice, k)
 	}
 	return slice
 }
