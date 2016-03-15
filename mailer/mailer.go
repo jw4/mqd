@@ -103,7 +103,7 @@ func findRecipients(eml *mail.Message) []string {
 	if eml == nil {
 		return recipients
 	}
-	return getEmails(eml.Header, "To", "Cc", "Bcc")
+	return getEmails(eml.Header, "To", "Cc", "Bcc", "X-Receiver")
 }
 
 func getEmails(in map[string][]string, keys ...string) []string {

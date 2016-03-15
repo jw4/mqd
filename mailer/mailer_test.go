@@ -44,6 +44,9 @@ func TestFindRecipients(t *testing.T) {
 	}{{
 		message:    []byte("To: asdf@wert.yo, qwer@asdf.gh\r\nCc: qwer@qwer.yt\r\nBcc: zxcv@zxcv.as\r\n\r\nasdf\r\n"),
 		recipients: []string{"asdf@wert.yo", "qwer@asdf.gh", "qwer@qwer.yt", "zxcv@zxcv.as"},
+	}, {
+		message:    []byte("To: asdf@wert.yo\r\nBcc: zxcv@zxcv.as\r\nX-Receiver: \"Yummy Gummy\" <yummy@gummy.br>\r\n\r\nasdf\r\n"),
+		recipients: []string{"asdf@wert.yo", "zxcv@zxcv.as", "yummy@gummy.br"},
 	}}
 
 	for ix, test := range tests {
