@@ -1,6 +1,7 @@
 // Copyright 2015-2016 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
+// +build windows
 
 package main
 
@@ -239,7 +240,7 @@ func exePath() (string, error) {
 	}
 	if filepath.Ext(p) == "" {
 		p += ".exe"
-		fi, err := os.Stat(p)
+		fi, err = os.Stat(p)
 		if err == nil {
 			if !fi.Mode().IsDir() {
 				return p, nil

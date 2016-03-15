@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE.md file.
 
 //go:generate goversioninfo -icon=../../img/smtp-dispatcher-gopher.ico
+// +build windows
 
 /*
 smtp-dispatcher is the command line executable used for testing and
