@@ -1,4 +1,4 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 // +build windows
@@ -16,6 +16,7 @@ import (
 	"golang.org/x/sys/windows/svc/debug"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
+	"gopkg.in/urfave/cli.v2"
 
 	config "github.com/jw4/mqd/config"
 	"github.com/jw4/mqd/dispatcher"
@@ -249,4 +250,15 @@ func exePath() (string, error) {
 		}
 	}
 	return "", err
+}
+
+func init() {
+	dispatcherCommands = append(dispatcherCommands, windowsServiceCmd())
+}
+
+func windowsServiceCmd() *cli.Command {
+	return &cli.Command{
+		Name:    "service",
+		Aliases: []string{"svc", "s"},
+	}
 }

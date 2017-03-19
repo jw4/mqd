@@ -23,7 +23,7 @@ pushd "${PROJECT_ROOT}" &> /dev/null
 #
 # Find package dirs excluding vendor
 #
-all_packages="$(find . -type f -name *.go ! -path '*/vendor/*' -exec dirname {} \; | sort -u)"
+all_packages="$(find . -type f -name '*.go' ! -path '*/vendor/*' -exec dirname {} \; | sort -u)"
 
 echo "go version $(go version | awk '{print $3}')"
 
