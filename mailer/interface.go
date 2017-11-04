@@ -1,13 +1,13 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mailer
+package mailer // inport "jw4.us/mqd/mailer"
 
 import (
 	"net/smtp"
 
-	config "github.com/jw4/mqd/config"
+	"jw4.us/mqd"
 )
 
 // EmailSender is an ad-hoc interface to describe the SendMail function
@@ -21,6 +21,6 @@ type EmailSender interface {
 // raw email messages into sent mail.
 type Mailer interface {
 	EmailSender
-	LoadSettings(*config.Settings) error
+	LoadSettings(*mqd.Settings) error
 	ConvertAndSend(email []byte) bool
 }

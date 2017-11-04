@@ -1,4 +1,4 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jw4/mqd/dispatcher"
+	"jw4.us/mqd/dispatcher"
 )
 
 func TestProcess(t *testing.T) {

@@ -1,4 +1,4 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
@@ -36,7 +36,7 @@ import (
 	"github.com/golang/glog"
 	"golang.org/x/sys/windows/svc"
 
-	config "github.com/jw4/mqd/config"
+	"jw4.us/mqd"
 )
 
 const (
@@ -149,13 +149,13 @@ func generate() {
         "password": "pazzwerd"
         }
     }}`
-	settings, err := config.UnmarshalSettings([]byte(buf))
+	settings, err := mqd.UnmarshalSettings([]byte(buf))
 	if err != nil {
 		glog.Fatalf("couldn't read settings %q\n", err)
 		os.Exit(9)
 	}
 
-	if err := config.WriteSettings(settingsfile, settings); err != nil {
+	if err := mqd.WriteSettings(settingsfile, settings); err != nil {
 		glog.Fatalf("couldn't write settings %q\n", err)
 		os.Exit(10)
 	}

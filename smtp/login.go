@@ -1,8 +1,8 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package smtp
+package smtp // inport "jw4.us/mqd/smtp"
 
 import (
 	"fmt"

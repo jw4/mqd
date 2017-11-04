@@ -1,14 +1,14 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mailer
+package mailer // inport "jw4.us/mqd/mailer"
 
 import (
 	"net/smtp"
 	"testing"
 
-	config "github.com/jw4/mqd/config"
+	"jw4.us/mqd"
 )
 
 func TestFindSender(t *testing.T) {
@@ -120,7 +120,7 @@ var (
 )
 
 func testMailer(t *testing.T) Mailer {
-	cfg, err := config.UnmarshalSettings(testConfig)
+	cfg, err := mqd.UnmarshalSettings(testConfig)
 	if err != nil {
 		t.Errorf("unmarshal fail: %v", err)
 	}

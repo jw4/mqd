@@ -1,4 +1,4 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 // +build windows
@@ -17,9 +17,9 @@ import (
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 
-	config "github.com/jw4/mqd/config"
-	"github.com/jw4/mqd/dispatcher"
-	"github.com/jw4/mqd/mailer"
+	"jw4.us/mqd"
+	"jw4.us/mqd/dispatcher"
+	"jw4.us/mqd/mailer"
 )
 
 var elog debug.Log
@@ -75,17 +75,17 @@ func (s *service) runDispatch() {
 	glog.Flush()
 }
 
-func (s *service) readSettings() *config.Settings {
-	var settings *config.Settings
+func (s *service) readSettings() *mqd.Settings {
+	var settings *mqd.Settings
 	r, err := os.Open(settingsfile)
 	if err != nil {
 		glog.Errorf("couldn't read settings: %v", err)
-		settings = config.NewSettings("", "")
+		settings = mqd.NewSettings("", "")
 	}
-	settings, err = config.ReadSettingsFrom(r)
+	settings, err = mqd.ReadSettingsFrom(r)
 	if err != nil {
 		glog.Errorf("couldn't read settings: %v", err)
-		settings = config.NewSettings("", "")
+		settings = mqd.NewSettings("", "")
 	}
 	return settings
 }

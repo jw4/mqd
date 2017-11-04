@@ -1,8 +1,8 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mqd
+package mqd // inport "jw4.us/mqd"
 
 import (
 	"encoding/json"
@@ -10,11 +10,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/mail"
-	"net/smtp"
+	gosmtp "net/smtp"
 	"os"
 	"strings"
 
-	mqd_smtp "github.com/jw4/mqd/smtp"
+	"jw4.us/mqd/smtp"
 )
 
 // SMTPAuthType names smtp authentication methods
@@ -143,16 +143,16 @@ type ConnectionDetails struct {
 
 // Auth returns an implementation of the smtp.Auth interface that can
 // be used to perform the smtp authentication for this ConnectionDetails
-func (d *ConnectionDetails) Auth() (smtp.Auth, error) {
+func (d *ConnectionDetails) Auth() (gosmtp.Auth, error) {
 	if d == nil {
 		return nil, fmt.Errorf("invalid connection info; nil")
 	}
 
 	switch d.AuthType {
 	case LoginAuth:
-		return mqd_smtp.LoginAuth(d.Username, d.Password), nil
+		return smtp.LoginAuth(d.Username, d.Password), nil
 	case PlainAuth:
-		return smtp.PlainAuth("", d.Username, d.Password, d.Host), nil
+		return gosmtp.PlainAuth("", d.Username, d.Password, d.Host), nil
 	}
 
 	return nil, fmt.Errorf("unknown auth type %q", string(d.AuthType))

@@ -1,8 +1,8 @@
-// Copyright 2015-2016 John Weldon. All rights reserved.
+// Copyright 2015-2017 John Weldon. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mailer
+package mailer // inport "jw4.us/mqd/mailer"
 
 import (
 	"bytes"
@@ -12,25 +12,25 @@ import (
 
 	"github.com/golang/glog"
 
-	config "github.com/jw4/mqd/config"
+	"jw4.us/mqd"
 )
 
 type senderFunc func(addr string, a smtp.Auth, from string, to []string, msg []byte) error
 
 type smtpMailer struct {
 	sendFn   senderFunc
-	settings *config.Settings
+	settings *mqd.Settings
 }
 
-// NewMailer returns a Mailer implementation using config.Settings
+// NewMailer returns a Mailer implementation using mqd.Settings
 // to transmit emails.
-func NewMailer(s *config.Settings) Mailer {
+func NewMailer(s *mqd.Settings) Mailer {
 	return &smtpMailer{settings: s, sendFn: smtp.SendMail}
 }
 
 // LoadSettings updates the Mailer configuration given the supplied
-// config.Settings.
-func (m *smtpMailer) LoadSettings(s *config.Settings) error {
+// mqd.Settings.
+func (m *smtpMailer) LoadSettings(s *mqd.Settings) error {
 	m.settings = s
 	return nil
 }
