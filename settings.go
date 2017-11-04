@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mqd // inport "jw4.us/mqd"
+package mqd // import "jw4.us/mqd"
 
 import (
 	"encoding/json"
@@ -20,6 +20,7 @@ import (
 // SMTPAuthType names smtp authentication methods
 type SMTPAuthType string
 
+// SMTPAuthTypes
 const (
 	LoginAuth SMTPAuthType = "LOGIN"
 	PlainAuth SMTPAuthType = "PLAIN"
@@ -116,7 +117,7 @@ func WriteSettings(path string, s *Settings) error {
 	if err != nil {
 		return err
 	}
-	defer fi.Close()
+	defer func() { _ = fi.Close() }()
 
 	return WriteSettingsTo(fi, s)
 }

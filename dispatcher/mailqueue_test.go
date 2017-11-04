@@ -71,7 +71,7 @@ func (tc *testContext) addFile(t *testing.T, contents string) {
 	if err != nil {
 		t.Fatalf("problem creating temp file: %q", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	_, err = f.Write([]byte(contents))
 	if err != nil {

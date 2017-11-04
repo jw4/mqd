@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package dispatcher // inport "jw4.us/mqd/dispatcher"
+package dispatcher // import "jw4.us/mqd/dispatcher"
 
 // MailQueueCallbackFn describes the callback mechanism the dispatcher
 // uses to transmit raw bytes representing an email to the mailer to

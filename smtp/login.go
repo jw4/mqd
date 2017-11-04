@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package smtp // inport "jw4.us/mqd/smtp"
+package smtp // import "jw4.us/mqd/smtp"
 
 import (
 	"fmt"

@@ -59,7 +59,7 @@ loop:
 				tick = time.NewTicker(time.Duration(settings.Interval) * time.Second)
 				changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
 			default:
-				elog.Error(1, fmt.Sprintf("unexpected control request #%d", c))
+				_ = elog.Error(1, fmt.Sprintf("unexpected control request #%d", c))
 			}
 		}
 	}
@@ -71,18 +71,19 @@ func (s *service) runDispatch() {
 	settings := s.readSettings()
 	q := dispatcher.NewPickupFolderQueue(settings.MailQueue, settings.BadMail, settings.SentMail)
 	m := mailer.NewMailer(settings)
-	q.Process(m.ConvertAndSend)
+	if err := q.Process(m.ConvertAndSend); err != nil {
+		glog.Errorf("error running ConvertAndSend: %v", err)
+	}
 	glog.Flush()
 }
 
 func (s *service) readSettings() *mqd.Settings {
 	var settings *mqd.Settings
 	r, err := os.Open(settingsfile)
-	if err != nil {
-		glog.Errorf("couldn't read settings: %v", err)
-		settings = mqd.NewSettings("", "")
+	if err == nil {
+		settings, err = mqd.ReadSettingsFrom(r)
+		defer func() { _ = r.Close() }()
 	}
-	settings, err = mqd.ReadSettingsFrom(r)
 	if err != nil {
 		glog.Errorf("couldn't read settings: %v", err)
 		settings = mqd.NewSettings("", "")
@@ -101,19 +102,19 @@ func runService(name string, isDebug bool) {
 			return
 		}
 	}
-	defer elog.Close()
+	defer func() { _ = elog.Close() }()
 
-	elog.Info(1, fmt.Sprintf("starting %s service", name))
+	_ = elog.Info(1, fmt.Sprintf("starting %s service", name))
 	run := svc.Run
 	if isDebug {
 		run = debug.Run
 	}
 	err = run(name, &service{settingsfile: settingsfile})
 	if err != nil {
-		elog.Error(1, fmt.Sprintf("%s service failed: %v", name, err))
+		_ = elog.Error(1, fmt.Sprintf("%s service failed: %v", name, err))
 		return
 	}
-	elog.Info(1, fmt.Sprintf("%s service stopped", name))
+	_ = elog.Info(1, fmt.Sprintf("%s service stopped", name))
 }
 
 func startService(name string) error {
@@ -121,13 +122,13 @@ func startService(name string) error {
 	if err != nil {
 		return err
 	}
-	defer m.Disconnect()
+	defer func() { _ = m.Disconnect() }()
 
 	s, err := m.OpenService(name)
 	if err != nil {
 		return fmt.Errorf("could not access service %s: %v", name, err)
 	}
-	defer s.Close()
+	defer func() { _ = s.Close() }()
 
 	err = s.Start()
 	if err != nil {
@@ -142,13 +143,13 @@ func controlService(name string, c svc.Cmd, to svc.State) error {
 	if err != nil {
 		return err
 	}
-	defer m.Disconnect()
+	defer func() { _ = m.Disconnect() }()
 
 	s, err := m.OpenService(name)
 	if err != nil {
 		return fmt.Errorf("could not access service %s: %v", name, err)
 	}
-	defer s.Close()
+	defer func() { _ = s.Close() }()
 
 	status, err := s.Control(c)
 	if err != nil {
@@ -178,11 +179,11 @@ func installService(name, friendly, desc string) error {
 	if err != nil {
 		return err
 	}
-	defer m.Disconnect()
+	defer func() { _ = m.Disconnect() }()
 
 	s, err := m.OpenService(name)
 	if err == nil {
-		s.Close()
+		_ = s.Close()
 		return fmt.Errorf("service %s already exists", name)
 	}
 	cfg := mgr.Config{DisplayName: friendly, Description: desc, StartType: mgr.StartAutomatic}
@@ -190,11 +191,11 @@ func installService(name, friendly, desc string) error {
 	if err != nil {
 		return err
 	}
-	defer s.Close()
+	defer func() { _ = s.Close() }()
 
 	err = eventlog.InstallAsEventCreate(name, eventlog.Error|eventlog.Warning|eventlog.Info)
 	if err != nil {
-		s.Delete()
+		_ = s.Delete()
 		return fmt.Errorf("SetupEventLogSource() failed: %s", err)
 	}
 	return nil
@@ -205,13 +206,13 @@ func removeService(name string) error {
 	if err != nil {
 		return err
 	}
-	defer m.Disconnect()
+	defer func() { _ = m.Disconnect() }()
 
 	s, err := m.OpenService(name)
 	if err != nil {
 		return fmt.Errorf("service %s is not installed", name)
 	}
-	defer s.Close()
+	defer func() { _ = s.Close() }()
 
 	err = s.Delete()
 	if err != nil {

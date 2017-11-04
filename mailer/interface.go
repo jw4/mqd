@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-package mailer // inport "jw4.us/mqd/mailer"
+package mailer // import "jw4.us/mqd/mailer"
 
 import (
 	"net/smtp"

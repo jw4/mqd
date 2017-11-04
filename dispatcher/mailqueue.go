@@ -2,13 +2,11 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-/*
-Package dispatcher provides the mechanism for watching and processing
-emails that appear in a designated pickup folder, and removes them
-after successfully sending them, or else moves the failed messages to
-the configured badmail folder.
-*/
-package dispatcher // inport "jw4.us/mqd/dispatcher"
+// Package dispatcher provides the mechanism for watching and processing
+// emails that appear in a designated pickup folder, and removes them
+// after successfully sending them, or else moves the failed messages to
+// the configured badmail folder.
+package dispatcher // import "jw4.us/mqd/dispatcher"
 
 import (
 	"io/ioutil"

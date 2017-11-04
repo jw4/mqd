@@ -64,7 +64,7 @@ func main() {
 		os.Exit(1)
 	}
 	settingsfile = filepath.Join(pwd, settingsfile)
-	flag.Set("log_dir", pwd)
+	_ = flag.Set("log_dir", pwd)
 	flag.Parse()
 
 	interactive, err := svc.IsAnInteractiveSession()

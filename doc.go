@@ -2,9 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE.md file.
 
-/*
-Package mqd provides functionality to watch a mailqueue folder and
-periodically process messages that appear in that folder by sending them
-to configured smtp host destinations.
-*/
-package mqd // inport "jw4.us/mqd"
+// Package mqd provides functionality to watch a mailqueue folder and
+// periodically process messages that appear in that folder by sending them
+// to configured smtp host destinations.
+package mqd // import "jw4.us/mqd"
